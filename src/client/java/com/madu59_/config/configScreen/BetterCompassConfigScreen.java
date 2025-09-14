@@ -31,6 +31,12 @@ public class BetterCompassConfigScreen extends Screen {
         list.addButton(SettingsManager.SHOW_COMPASS_HUD, btn -> {
             SettingsManager.SHOW_COMPASS_HUD.setToNextValue();
         });
+        list.addButton(SettingsManager.SHOW_LAST_DEATH_DIRECTION, btn -> {
+            SettingsManager.SHOW_LAST_DEATH_DIRECTION.setToNextValue();
+        }, INDENT);
+        list.addButton(SettingsManager.SHOW_NETHER_PORTAL_DIRECTION, btn -> {
+            SettingsManager.SHOW_NETHER_PORTAL_DIRECTION.setToNextValue();
+        }, INDENT);
 
         ButtonWidget doneButton = ButtonWidget.builder(Text.literal("Done"), b -> {
             this.client.setScreen(this.parent);

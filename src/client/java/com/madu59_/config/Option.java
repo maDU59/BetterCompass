@@ -55,6 +55,10 @@ public class Option {
         return this.value.toString();
     }
 
+    public int getValueAsIndex(){
+        return possibleValues.indexOf(value);
+    }
+
     public void setToNextValue() {
         if (possibleValues != null && !possibleValues.isEmpty()) {
             int currentIndex = possibleValues.indexOf(value);

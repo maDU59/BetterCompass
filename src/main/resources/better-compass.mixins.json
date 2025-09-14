@@ -1,9 +1,9 @@
 {
 	"required": true,
-	"package": "com.madu59_.mixin",
+	"package": "com.madu59_.mixin.client",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"ExampleMixin"
+	"client": [
+		"FovMultiplierAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

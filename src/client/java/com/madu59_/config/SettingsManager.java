@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import com.maDU59_.BetterCompass;
+
 import java.lang.Math;
 import java.io.*;
 import java.lang.reflect.Type;
@@ -15,7 +17,7 @@ public class SettingsManager {
 
     public static List<Option> ALL_OPTIONS = new ArrayList<>();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = Paths.get(System.getenv("APPDATA"), ".minecraft", "config", "ptp.json");
+    private static final Path CONFIG_PATH = Paths.get(System.getenv("APPDATA"), ".minecraft", "config", BetterCompass.MOD_ID+".json");
     public static List<Object> ENABLING_OPTION_VALUES = List.of(true, false);
     public static List<Object> COLOR_OPTION_VALUES = List.of("Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "White", "Black");
     public static List<Object> OPACITY_OPTION_VALUES = List.of("Opaque", "Transparent", "Pulsing");
@@ -27,6 +29,24 @@ public class SettingsManager {
         true,
         true,
         List.of("Always", "Compass in inventory", "Compass in hand", "Never")
+    );
+
+    public static Option SHOW_LAST_DEATH_DIRECTION = loadOptionWithDefaults(
+        "SHOW_LAST_DEATH_DIRECTION",
+        "Show the last death's direction",
+        "Toggle the visibility of the last death's direction",
+        true,
+        true,
+        List.of(true, false)
+    );
+
+    public static Option SHOW_NETHER_PORTAL_DIRECTION = loadOptionWithDefaults(
+        "SHOW_NETHER_PORTAL_DIRECTION",
+        "Show the nether portal's direction",
+        "Toggle the visibility of the nether portal's direction",
+        true,
+        true,
+        List.of(true, false)
     );
 
     public static List<String> getAllOptionsId(){

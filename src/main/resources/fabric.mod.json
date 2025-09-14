@@ -26,11 +26,7 @@
 		]
 	},
 	"mixins": [
-		"better-compass.mixins.json",
-		{
-			"config": "better-compass.client.mixins.json",
-			"environment": "client"
-		}
+		"better-compass.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.17.2",
