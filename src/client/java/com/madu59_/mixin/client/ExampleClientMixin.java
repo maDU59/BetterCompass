@@ -1,4 +1,4 @@
-package com.madu59_.mixin.client;
+package com.maDU59_.mixin.client;
 
 import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;

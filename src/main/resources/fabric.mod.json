@@ -16,10 +16,13 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.madu59_.BetterCompass"
+			"com.maDU59_.BetterCompass"
 		],
 		"client": [
-			"com.madu59_.BetterCompassClient"
+			"com.maDU59_.BetterCompassClient"
+		],
+		"modmenu": [ 
+			"com.maDU59_.config.configScreen.ModMenuApiImpl" 
 		]
 	},
 	"mixins": [
