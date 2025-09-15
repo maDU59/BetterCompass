@@ -6,6 +6,8 @@ import com.google.gson.reflect.TypeToken;
 
 import com.maDU59_.BetterCompass;
 
+import net.fabricmc.loader.api.FabricLoader;
+
 import java.lang.Math;
 import java.io.*;
 import java.lang.reflect.Type;
@@ -17,7 +19,7 @@ public class SettingsManager {
 
     public static List<Option> ALL_OPTIONS = new ArrayList<>();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = Paths.get(System.getenv("APPDATA"), ".minecraft", "config", BetterCompass.MOD_ID+".json");
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(BetterCompass.MOD_ID + ".json");
     public static List<Object> ENABLING_OPTION_VALUES = List.of(true, false);
     public static List<Object> COLOR_OPTION_VALUES = List.of("Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "White", "Black");
     public static List<Object> OPACITY_OPTION_VALUES = List.of("Opaque", "Transparent", "Pulsing");

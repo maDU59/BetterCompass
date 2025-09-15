@@ -21,6 +21,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
@@ -179,7 +180,7 @@ public class BetterCompassClient implements ClientModInitializer {
 
 
 	public static void saveValues() {
-		Path configPath = Paths.get(System.getenv("APPDATA"), ".minecraft", "BetterCompass", serverId, "BetterCompassData.json");
+		Path configPath = FabricLoader.getInstance().getConfigDir().resolve(serverId).resolve(BetterCompass.MOD_ID + ".json");
         try {
             Files.createDirectories(configPath.getParent());
             try (Writer writer = Files.newBufferedWriter(configPath)) {
@@ -191,7 +192,7 @@ public class BetterCompassClient implements ClientModInitializer {
     }
 
 	private static void loadData() {
-		Path configPath = Paths.get(System.getenv("APPDATA"), ".minecraft", "BetterCompass", serverId, "BetterCompassData.json");
+		Path configPath = FabricLoader.getInstance().getConfigDir().resolve(serverId).resolve(BetterCompass.MOD_ID + ".json");
         try (Reader reader = Files.newBufferedReader(configPath)) {
             Type type = new TypeToken<Map<String, Object>>() {}.getType();
 			valueMap = GSON.fromJson(reader, type);
