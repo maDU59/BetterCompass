@@ -11,7 +11,7 @@ public class ClientCommands {
     public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             dispatcher.register(
-                literal("ptpConfig")
+                literal("BetterCompassConfig")
                     .then(argument("option", StringArgumentType.string()).suggests((context, builder) -> { return CommandSource.suggestMatching(SettingsManager.getAllOptionsId(), builder);})
                         .then(argument("value", StringArgumentType.string()).suggests((context, builder) -> { return CommandSource.suggestMatching(SettingsManager.getOptionPossibleValues(StringArgumentType.getString(context, "option")), builder);})
                             .executes(context -> {

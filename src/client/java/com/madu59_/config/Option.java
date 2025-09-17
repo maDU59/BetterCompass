@@ -66,4 +66,8 @@ public class Option {
             value = possibleValues.get(nextIndex);
         }
     }
+
+    public void setPossibleValues(List<Object> possibleValues){
+        this.possibleValues = possibleValues;
+    }
 }

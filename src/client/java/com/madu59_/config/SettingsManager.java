@@ -8,7 +8,6 @@ import com.maDU59_.BetterCompass;
 
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.lang.Math;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.file.*;
@@ -21,34 +20,88 @@ public class SettingsManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(BetterCompass.MOD_ID + ".json");
     public static List<Object> ENABLING_OPTION_VALUES = List.of(true, false);
-    public static List<Object> COLOR_OPTION_VALUES = List.of("Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "White", "Black");
-    public static List<Object> OPACITY_OPTION_VALUES = List.of("Opaque", "Transparent", "Pulsing");
+    public static List<Object> COLOR_OPTION_VALUES = List.of("Red", "Green", "Blue", "Yellow", "Cyan", "Magenta", "Purple", "White", "Grey", "Black");
+    public static List<Object> POSITION_VALUES = List.of("Aligned", "Above", "Under", "Disabled");
 
     public static Option SHOW_COMPASS_HUD = loadOptionWithDefaults(
         "SHOW_COMPASS_HUD",
         "Show the compass HUD",
         "Toggle the visibility of the compass HUD",
-        true,
-        true,
+        "Always",
+        "Always",
         List.of("Always", "Compass in inventory", "Compass in hand", "Never")
     );
 
-    public static Option SHOW_LAST_DEATH_DIRECTION = loadOptionWithDefaults(
-        "SHOW_LAST_DEATH_DIRECTION",
-        "Show the last death's direction",
-        "Toggle the visibility of the last death's direction",
-        true,
-        true,
-        List.of(true, false)
+    public static Option COMPASS_STYLE = loadOptionWithDefaults(
+        "COMPASS_STYLE",
+        "Compass' style",
+        "Change the style of the compass",
+        "No shadows",
+        "No shadows",
+        List.of("Shadows", "No shadows")
     );
 
-    public static Option SHOW_NETHER_PORTAL_DIRECTION = loadOptionWithDefaults(
-        "SHOW_NETHER_PORTAL_DIRECTION",
-        "Show the nether portal's direction",
-        "Toggle the visibility of the nether portal's direction",
-        true,
-        true,
-        List.of(true, false)
+    public static Option COMPASS_POSITION = loadOptionWithDefaults(
+        "COMPASS_POSITION",
+        "Compass' position",
+        "Change the position of the compass",
+        "Top",
+        "Top",
+        List.of("Top", "Bottom")
+    );
+
+    public static Option CARDINALS_DIRECTION_POSITION = loadOptionWithDefaults(
+        "CARDINALS_DIRECTION_POSITION",
+        "Position of the cardinal directions on the compass",
+        "Choose the position of the cardinal directions on the compass",
+        "Aligned",
+        "Aligned",
+        POSITION_VALUES
+    );
+
+    public static Option CARDINALS_DIRECTION_COLOR = loadOptionWithDefaults(
+        "CARDINALS_DIRECTION_COLOR",
+        "Color of the cardinal directions on the compass",
+        "Choose the color of the cardinal directions on the compass",
+        "Red",
+        "Red",
+        COLOR_OPTION_VALUES
+    );
+
+    public static Option LAST_DEATH_DIRECTION_POSITION = loadOptionWithDefaults(
+        "LAST_DEATH_DIRECTION_POSITION",
+        "Position of the last death's direction on the compass",
+        "Choose the position of the last death's direction on the compass",
+        "Under",
+        "Under",
+        POSITION_VALUES
+    );
+
+    public static Option LAST_DEATH_DIRECTION_COLOR = loadOptionWithDefaults(
+        "LAST_DEATH_DIRECTION_COLOR",
+        "Color of the last death's direction on the compass",
+        "Choose the color of the last death's direction on the compass",
+        "Red",
+        "Red",
+        COLOR_OPTION_VALUES
+    );
+
+    public static Option NETHER_PORTAL_DIRECTION_POSITION = loadOptionWithDefaults(
+        "NETHER_PORTAL_DIRECTION_POSITION",
+        "Position of the nether portal's direction on the compass",
+        "Choose the position of the nether portal's direction on the compass",
+        "Under",
+        "Under",
+        POSITION_VALUES
+    );
+
+    public static Option NETHER_PORTAL_DIRECTION_COLOR = loadOptionWithDefaults(
+        "NETHER_PORTAL_DIRECTION_COLOR",
+        "Color of the nether portal's direction on the compass",
+        "Choose the color of the nether portal's direction on the compass",
+        "Red",
+        "Red",
+        COLOR_OPTION_VALUES
     );
 
     public static List<String> getAllOptionsId(){
@@ -87,27 +140,9 @@ public class SettingsManager {
         return null;
     }
 
-    public static int getARGBColorFromSetting(String colorName, String opacitySetting) {
+    public static int getRGBColorFromSetting(String colorName) {
         int[] colors = getColorFromSetting(colorName);
-        return colors[2] + colors[1] * 256 + colors[0] * 256 * 256 + getAlphaFromSetting(opacitySetting) * 256 * 256 *256;
-    }
-
-    public static int getAlphaFromSetting(String opacitySetting){
-        int alpha;
-        switch (opacitySetting) {
-            case "Opaque":
-                alpha = 255;
-                break;
-            case "Transparent":
-                alpha = 100;
-                break;
-            case "Pulsing":
-                alpha = (int) Math.floor(Math.sin((double)(System.currentTimeMillis() % 2000 / 2000.0 * Math.PI)) * 206) + 50; // Pulsing effect
-                break;
-            default:
-                alpha = 255; // Default to opaque if unknown
-        }
-        return alpha;
+        return colors[2] + colors[1] * 256 + colors[0] * 256 * 256 + 255 * 256 * 256 *256;
     }
 
     public static float[] convertColorToFloat(int[] colors){
@@ -146,10 +181,20 @@ public class SettingsManager {
                 red = 255;
                 blue = 255;
                 break;
+            case "Purple":
+                red = 128;
+                green = 0;
+                blue = 128;
+                break;
             case "White":
                 red = 255;
                 green = 255;
                 blue = 255;
+                break;
+            case "Grey":
+                red = 128;
+                green = 128;
+                blue = 128;
                 break;
             case "Black":
                 red = 0;
@@ -207,6 +252,7 @@ public class SettingsManager {
                     possibleValues
             );
         } else {
+            loadedOption.setPossibleValues(possibleValues);
             SettingsManager.ALL_OPTIONS.add(loadedOption);
             return loadedOption;
         }
