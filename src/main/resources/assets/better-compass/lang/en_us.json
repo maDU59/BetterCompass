@@ -19,7 +19,7 @@
   "better-compass.config.nether_portal_direction_color_desc": "Choose the color of the nether portal's direction on the compass.",
   "better-compass.config.enabled":"Enabled",
   "better-compass.config.disabled":"Disabled",
-  "beter-compass.config.compass_hud":"COMPASS HUD",
+  "better-compass.config.compass_hud":"COMPASS HUD",
 
   "Red": "Red",
   "Green": "Green",
@@ -35,5 +35,11 @@
   "Above": "Above",
   "Under": "Under",
   "Disabled": "Disabled",
-  "Enabled": "Enabled"
+  "Enabled": "Enabled",
+  "Always": "Always",
+  "Compass in inventory": "Compass in inventory",
+  "Compass in hand": "Compass in hand",
+  "Never": "Never",
+  "Shadows": "Shadows",
+  "No shadows": "No shadows"
 }

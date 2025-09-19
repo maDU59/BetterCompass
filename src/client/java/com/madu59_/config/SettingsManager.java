@@ -81,8 +81,8 @@ public class SettingsManager {
         "LAST_DEATH_DIRECTION_COLOR",
         "better-compass.config.last_death_direction_color",
         "better-compass.config.last_death_direction_color_desc",
-        "Red",
-        "Red",
+        "Grey",
+        "Grey",
         COLOR_OPTION_VALUES
     );
 
@@ -99,8 +99,8 @@ public class SettingsManager {
         "NETHER_PORTAL_DIRECTION_COLOR",
         "better-compass.config.nether_portal_direction_color",
         "better-compass.config.nether_portal_direction_color_desc",
-        "Red",
-        "Red",
+        "Purple",
+        "Purple",
         COLOR_OPTION_VALUES
     );
 
