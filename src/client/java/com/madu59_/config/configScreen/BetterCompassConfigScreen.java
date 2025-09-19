@@ -27,7 +27,7 @@ public class BetterCompassConfigScreen extends Screen {
         this.list = new MyConfigListWidget(this.client, this.width, this.height - 80, 40, 26);
 
         // Example: Add categories + buttons
-        list.addCategory("COMPASS HUD");
+        list.addCategory("better-compass.config.compass_hud");
         list.addButton(SettingsManager.SHOW_COMPASS_HUD, btn -> {
             SettingsManager.SHOW_COMPASS_HUD.setToNextValue();
         });

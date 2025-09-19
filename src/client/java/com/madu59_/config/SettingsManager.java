@@ -25,8 +25,8 @@ public class SettingsManager {
 
     public static Option SHOW_COMPASS_HUD = loadOptionWithDefaults(
         "SHOW_COMPASS_HUD",
-        "Show the compass HUD",
-        "Toggle the visibility of the compass HUD",
+        "better-compass.config.show_compass_hud",
+        "better-compass.config.show_compass_hud_desc",
         "Always",
         "Always",
         List.of("Always", "Compass in inventory", "Compass in hand", "Never")
@@ -34,8 +34,8 @@ public class SettingsManager {
 
     public static Option COMPASS_STYLE = loadOptionWithDefaults(
         "COMPASS_STYLE",
-        "Compass' style",
-        "Change the style of the compass",
+        "better-compass.config.compass_style",
+        "better-compass.config.compass_style_desc",
         "No shadows",
         "No shadows",
         List.of("Shadows", "No shadows")
@@ -43,8 +43,8 @@ public class SettingsManager {
 
     public static Option COMPASS_POSITION = loadOptionWithDefaults(
         "COMPASS_POSITION",
-        "Compass' position",
-        "Change the position of the compass",
+        "better-compass.config.compass_position",
+        "better-compass.config.compass_position_desc",
         "Top",
         "Top",
         List.of("Top", "Bottom")
@@ -52,8 +52,8 @@ public class SettingsManager {
 
     public static Option CARDINALS_DIRECTION_POSITION = loadOptionWithDefaults(
         "CARDINALS_DIRECTION_POSITION",
-        "Position of the cardinal directions on the compass",
-        "Choose the position of the cardinal directions on the compass",
+        "better-compass.config.cardinals_direction_position",
+        "better-compass.config.cardinals_direction_position_desc",
         "Aligned",
         "Aligned",
         POSITION_VALUES
@@ -61,8 +61,8 @@ public class SettingsManager {
 
     public static Option CARDINALS_DIRECTION_COLOR = loadOptionWithDefaults(
         "CARDINALS_DIRECTION_COLOR",
-        "Color of the cardinal directions on the compass",
-        "Choose the color of the cardinal directions on the compass",
+        "better-compass.config.cardinals_direction_color",
+        "better-compass.config.cardinals_direction_color_desc",
         "Red",
         "Red",
         COLOR_OPTION_VALUES
@@ -70,8 +70,8 @@ public class SettingsManager {
 
     public static Option LAST_DEATH_DIRECTION_POSITION = loadOptionWithDefaults(
         "LAST_DEATH_DIRECTION_POSITION",
-        "Position of the last death's direction on the compass",
-        "Choose the position of the last death's direction on the compass",
+        "better-compass.config.last_death_direction_position",
+        "better-compass.config.last_death_direction_position_desc",
         "Under",
         "Under",
         POSITION_VALUES
@@ -79,8 +79,8 @@ public class SettingsManager {
 
     public static Option LAST_DEATH_DIRECTION_COLOR = loadOptionWithDefaults(
         "LAST_DEATH_DIRECTION_COLOR",
-        "Color of the last death's direction on the compass",
-        "Choose the color of the last death's direction on the compass",
+        "better-compass.config.last_death_direction_color",
+        "better-compass.config.last_death_direction_color_desc",
         "Red",
         "Red",
         COLOR_OPTION_VALUES
@@ -88,8 +88,8 @@ public class SettingsManager {
 
     public static Option NETHER_PORTAL_DIRECTION_POSITION = loadOptionWithDefaults(
         "NETHER_PORTAL_DIRECTION_POSITION",
-        "Position of the nether portal's direction on the compass",
-        "Choose the position of the nether portal's direction on the compass",
+        "better-compass.config.nether_portal_direction_position",
+        "better-compass.config.nether_portal_direction_position_desc",
         "Under",
         "Under",
         POSITION_VALUES
@@ -97,8 +97,8 @@ public class SettingsManager {
 
     public static Option NETHER_PORTAL_DIRECTION_COLOR = loadOptionWithDefaults(
         "NETHER_PORTAL_DIRECTION_COLOR",
-        "Color of the nether portal's direction on the compass",
-        "Choose the color of the nether portal's direction on the compass",
+        "better-compass.config.nether_portal_direction_color",
+        "better-compass.config.nether_portal_direction_color_desc",
         "Red",
         "Red",
         COLOR_OPTION_VALUES
@@ -253,6 +253,8 @@ public class SettingsManager {
             );
         } else {
             loadedOption.setPossibleValues(possibleValues);
+            loadedOption.setName(name);
+            loadedOption.setDescription(description);
             SettingsManager.ALL_OPTIONS.add(loadedOption);
             return loadedOption;
         }

@@ -64,7 +64,7 @@ public class MyConfigListWidget extends ElementListWidget<MyConfigListWidget.Ent
             TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
             int textX = x + entryWidth / 2;
             int textY = y + (entryHeight - textRenderer.fontHeight) / 2;
-            context.drawCenteredTextWithShadow(textRenderer, Text.literal(this.name), textX, textY, 0xFFFFFFFF);
+            context.drawCenteredTextWithShadow(textRenderer, Text.translatable(this.name), textX, textY, 0xFFFFFFFF);
         }  
 
         @Override
@@ -74,7 +74,7 @@ public class MyConfigListWidget extends ElementListWidget<MyConfigListWidget.Ent
 
         @Override
         public List<? extends Element> children() {
-            return List.of(this);
+            return List.of();
         }
     }
 
