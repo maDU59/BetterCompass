@@ -145,10 +145,9 @@ public class BetterCompassClient implements ClientModInitializer {
 			color = SettingsManager.getRGBColorFromSetting(SettingsManager.LAST_DEATH_DIRECTION_COLOR.getValueAsString());
 			if(SettingsManager.LAST_DEATH_DIRECTION_POSITION.getValue().equals("Under")){deltaY = 0.03F; size = 0.8F;}
 			if(SettingsManager.LAST_DEATH_DIRECTION_POSITION.getValue().equals("Above")){deltaY = -0.03F; size = 0.8F;}
-			Vec3d playerPos = player.getPos();
 			Vec3d deathPos = new Vec3d(deathPointBlockPos.getX(), 0, deathPointBlockPos.getZ());
-			double dx = deathPos.x - playerPos.x;
-			double dz = deathPos.z - playerPos.z;
+			double dx = deathPos.x - player.getX();
+			double dz = deathPos.z - player.getZ();
 			drawCompassSymbol(context, textRenderer, fov, "💀", (float)(MathHelper.atan2(dz, dx) * (180 / Math.PI)) - 90, camDirection, compassPosition + deltaY, color, size);
 		}
 
@@ -159,10 +158,9 @@ public class BetterCompassClient implements ClientModInitializer {
 			color = SettingsManager.getRGBColorFromSetting(SettingsManager.NETHER_PORTAL_DIRECTION_COLOR.getValueAsString());
 			if(SettingsManager.NETHER_PORTAL_DIRECTION_POSITION.getValue().equals("Under")){deltaY = 0.03F; size = 0.8F;}
 			if(SettingsManager.NETHER_PORTAL_DIRECTION_POSITION.getValue().equals("Above")){deltaY = -0.03F; size = 0.8F;}
-			Vec3d playerPos = player.getPos();
 			Vec3d netherPortalPos = new Vec3d(netherPortalBlockPos.getX(), 0, netherPortalBlockPos.getZ());
-			double dx = netherPortalPos.x - playerPos.x;
-			double dz = netherPortalPos.z - playerPos.z;
+			double dx = netherPortalPos.x - player.getX();
+			double dz = netherPortalPos.z - player.getZ();
 			drawCompassSymbol(context, textRenderer, fov, "🌍", (float)(MathHelper.atan2(dz, dx) * (180 / Math.PI)) - 90, camDirection, compassPosition + deltaY, color, size);
 		}
 	}

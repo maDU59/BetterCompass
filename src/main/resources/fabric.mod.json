@@ -11,7 +11,7 @@
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/better-compass/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -29,8 +29,8 @@
 		"better-compass.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.16.14",
-		"minecraft": "~1.21.7",
+		"fabricloader": ">=0.17.2",
+		"minecraft": "~1.21.9",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
