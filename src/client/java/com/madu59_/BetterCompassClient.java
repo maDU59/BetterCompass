@@ -59,6 +59,7 @@ public class BetterCompassClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		ClientCommands.register();
 		// Attach our rendering code to before the chat hud layer. Our layer will render right before the chat. The API will take care of z spacing.
 		HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, Identifier.of(BetterCompass.MOD_ID, "before_chat"), BetterCompassClient::render);
 
