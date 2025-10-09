@@ -12,7 +12,7 @@ import java.nio.file.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
+import com.maDU59_.config.ClientCommands;
 import com.maDU59_.config.SettingsManager;
 import com.maDU59_.mixin.client.FovMultiplierAccessor;
 
