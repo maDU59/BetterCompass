@@ -3,7 +3,7 @@
 	"package": "com.maDU59_.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"FovMultiplierAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1
