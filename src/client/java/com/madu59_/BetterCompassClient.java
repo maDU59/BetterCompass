@@ -47,7 +47,7 @@ public class BetterCompassClient implements ClientModInitializer {
 	private static final float GUI_WIDTH = 0.5F;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-	private static Map<String, Object> valueMap = new LinkedHashMap<>();
+	private static Map<String, String> valueMap = new LinkedHashMap<>();
 
 
 	private static RegistryKey<World> lastDimension = null;
@@ -67,8 +67,8 @@ public class BetterCompassClient implements ClientModInitializer {
 			if (client.player != null && client.player.isDead()) {
 				deathPointBlockPos = client.player.getBlockPos();
 				deathDimension = client.world.getRegistryKey();
-				valueMap.put("deathPointBlockPos", deathPointBlockPos);
-				valueMap.put("deathDimension", deathDimension);
+				valueMap.put("deathPointBlockPos", blockPosToString(deathPointBlockPos));
+				valueMap.put("deathDimension", registryKeyToString(deathDimension));
 				saveValues();
 			}
 			if (client.world != null) {
@@ -76,7 +76,7 @@ public class BetterCompassClient implements ClientModInitializer {
 				if (lastDimension != null && !lastDimension.equals(current)) {
 					if (current == World.NETHER) {
 						netherPortalBlockPos = client.player.getBlockPos();
-						valueMap.put("netherPortalBlockPos", netherPortalBlockPos);
+						valueMap.put("netherPortalBlockPos", blockPosToString(netherPortalBlockPos));
 						saveValues();
 					}
 					else{
@@ -214,37 +214,38 @@ public class BetterCompassClient implements ClientModInitializer {
 	private static void loadData() {
 		Path configPath = FabricLoader.getInstance().getConfigDir().resolve(serverId).resolve(BetterCompass.MOD_ID + ".json");
         try (Reader reader = Files.newBufferedReader(configPath)) {
-            Type type = new TypeToken<Map<String, Object>>() {}.getType();
+            Type type = new TypeToken<Map<String, String>>() {}.getType();
 			valueMap = GSON.fromJson(reader, type);
         } catch (IOException e) {
             e.printStackTrace();
 			return;
         }
 
-		Object raw = valueMap.get("deathDimension");
-		if (raw instanceof Map<?, ?> rawMap) {
-			Object valueRaw = rawMap.get("value");
-			if(valueRaw instanceof Map<?, ?> innerRawMap){
-				String namespace = (String) innerRawMap.get("namespace");
-				String path = (String) innerRawMap.get("path");
-				deathDimension = RegistryKey.<World>of(RegistryKeys.WORLD, Identifier.of(namespace,path));
-			}
+		if(valueMap.containsKey("deathPointBlockPos")){
+			deathPointBlockPos = stringToBlockPos(valueMap.get("deathPointBlockPos"));
 		}
-
-		raw = valueMap.get("deathPointBlockPos");
-		if (raw instanceof Map<?, ?> rawMap) {
-			int x = ((Double) rawMap.get("x")).intValue();
-			int y = ((Double) rawMap.get("y")).intValue();
-			int z = ((Double) rawMap.get("z")).intValue();
-			deathPointBlockPos = new BlockPos(x, y, z);
+		if(valueMap.containsKey("deathDimension")){
+			deathDimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.tryParse(valueMap.get("deathDimension")));
 		}
-
-		raw = valueMap.get("netherPortalBlockPos");
-		if (raw instanceof Map<?, ?> rawMap) {
-			int x = ((Double) rawMap.get("x")).intValue();
-			int y = ((Double) rawMap.get("y")).intValue();
-			int z = ((Double) rawMap.get("z")).intValue();
-			netherPortalBlockPos = new BlockPos(x, y, z);
+		if(valueMap.containsKey("netherPortalBlockPos")){
+			netherPortalBlockPos = stringToBlockPos(valueMap.get("netherPortalBlockPos"));
 		}
     }
+
+	private static String blockPosToString(BlockPos pos){
+		return pos.getX() + "," + pos.getY() + "," + pos.getZ();
+	}
+
+	private static String registryKeyToString(RegistryKey<World> key){
+		return key.getValue().toString();
+	}
+
+	private static BlockPos stringToBlockPos(String str){
+		String[] coords = str.split(",");
+		return new BlockPos(
+			Integer.parseInt(coords[0]),
+			Integer.parseInt(coords[1]),
+			Integer.parseInt(coords[2])
+		);
+	}
 }
