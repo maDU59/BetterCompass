@@ -1,9 +1,9 @@
-package com.maDU59_.config.configScreen;
+package fr.madu59.bettercompass.config.configScreen;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 
-import com.maDU59_.config.SettingsManager;
+import fr.madu59.bettercompass.config.SettingsManager;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;

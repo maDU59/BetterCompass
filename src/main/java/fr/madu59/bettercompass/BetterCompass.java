@@ -1,4 +1,4 @@
-package com.maDU59_;
+package fr.madu59.bettercompass;
 
 import net.fabricmc.api.ModInitializer;
 

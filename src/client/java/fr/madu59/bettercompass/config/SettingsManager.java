@@ -1,11 +1,10 @@
-package com.maDU59_.config;
+package fr.madu59.bettercompass.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import com.maDU59_.BetterCompass;
-
+import fr.madu59.bettercompass.BetterCompass;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.*;

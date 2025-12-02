@@ -1,8 +1,8 @@
-package com.maDU59_.config.configScreen;
+package fr.madu59.bettercompass.config.configScreen;
 
 import java.util.List;
 
-import com.maDU59_.config.Option;
+import fr.madu59.bettercompass.config.Option;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

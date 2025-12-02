@@ -1,4 +1,4 @@
-package com.maDU59_.mixin.client;
+package fr.madu59.bettercompass.mixin.client;
 
 import net.minecraft.client.render.GameRenderer;
 

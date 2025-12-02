@@ -1,4 +1,4 @@
-package com.maDU59_.config;
+package fr.madu59.bettercompass.config;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.*;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;

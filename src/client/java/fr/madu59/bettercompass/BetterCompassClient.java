@@ -1,4 +1,4 @@
-package com.maDU59_;
+package fr.madu59.bettercompass;
 
 
 import java.lang.reflect.Type;
@@ -12,9 +12,9 @@ import java.nio.file.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.maDU59_.config.ClientCommands;
-import com.maDU59_.config.SettingsManager;
-import com.maDU59_.mixin.client.FovMultiplierAccessor;
+import fr.madu59.bettercompass.config.ClientCommands;
+import fr.madu59.bettercompass.config.SettingsManager;
+import fr.madu59.bettercompass.mixin.client.FovMultiplierAccessor;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
