@@ -134,7 +134,7 @@ public class SettingsManager {
                 return option.getPossibleValues().stream().map(Object::toString).collect(Collectors.toList());
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 
     public static int getRGBColorFromSetting(String colorName) {
