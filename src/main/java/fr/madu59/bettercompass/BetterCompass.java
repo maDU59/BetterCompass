@@ -1,83 +1,100 @@
 package fr.madu59.bettercompass;
 
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.lang.Math;
-import java.io.*;
-import java.nio.file.*;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import fr.madu59.bettercompass.config.ClientCommands;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import fr.madu59.bettercompass.config.SettingsManager;
-import fr.madu59.bettercompass.mixin.client.FovMultiplierAccessor;
-
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3x2f;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class BetterCompass implements ClientModInitializer {
 	public static final String MOD_ID = "better-compass";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
+	private static final Minecraft CLIENT = Minecraft.getInstance();
 	private static final float GUI_WIDTH = 0.5F;
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static Map<String, String> valueMap = new LinkedHashMap<>();
 
-
-	private static RegistryKey<World> lastDimension = null;
+	private static ResourceKey<Level> lastDimension = null;
 
 	public static BlockPos deathPointBlockPos = null;
-	public static RegistryKey<World> deathDimension = null;
+	public static ResourceKey<Level> deathDimension = null;
 	public static BlockPos netherPortalBlockPos = null;
 	public static String serverId;
 
 	@Override
 	public void onInitializeClient() {
-		ClientCommands.register();
+		ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> dispatcher.register(ClientCommands.literal("bettercompass")
+				.then(ClientCommands.argument("option", StringArgumentType.string()).suggests((_, builder) -> SharedSuggestionProvider.suggest(SettingsManager.getAllOptionsId(), builder))
+						.then(ClientCommands.argument("value", StringArgumentType.string()).suggests((context, builder) -> SharedSuggestionProvider.suggest(SettingsManager.getOptionPossibleValues(StringArgumentType.getString(context, "option")), builder))
+								.executes(context -> {
+									String option = StringArgumentType.getString(context, "option");
+									String value = StringArgumentType.getString(context, "value");
+
+									boolean success = SettingsManager.setOptionValue(option, value);
+									context.getSource().sendFeedback(Component.literal(success ? "Updated " + option + " to " + value : "Failed to update setting."));
+									if(success){
+										SettingsManager.saveSettings(SettingsManager.ALL_OPTIONS);
+									}
+									return success ? 1 : 0;
+								})
+						)
+				)
+		));
+
 		// Attach our rendering code to before the chat hud layer. Our layer will render right before the chat. The API will take care of z spacing.
-		HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, Identifier.of(MOD_ID, "before_chat"), BetterCompass::render);
+		HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, Identifier.fromNamespaceAndPath(MOD_ID, "before_chat"), BetterCompass::render);
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			if (client.player != null && client.player.isDead()) {
-				deathPointBlockPos = client.player.getBlockPos();
-				deathDimension = client.world.getRegistryKey();
+			if (client.player != null && client.player.isDeadOrDying()) {
+				deathPointBlockPos = client.player.blockPosition();
+				deathDimension = client.level.dimension();
 				valueMap.put("deathPointBlockPos", blockPosToString(deathPointBlockPos));
 				valueMap.put("deathDimension", registryKeyToString(deathDimension));
 				saveValues();
 			}
-			if (client.world != null) {
-			RegistryKey<World> current = client.world.getRegistryKey();
+			if (client.level != null) {
+			ResourceKey<Level> current = client.level.dimension();
 				if (lastDimension != null && !lastDimension.equals(current)) {
-					if (current == World.NETHER) {
-						netherPortalBlockPos = client.player.getBlockPos();
+					if (current == Level.NETHER) {
+						netherPortalBlockPos = client.player.blockPosition();
 						valueMap.put("netherPortalBlockPos", blockPosToString(netherPortalBlockPos));
 						saveValues();
 					}
@@ -91,39 +108,38 @@ public class BetterCompass implements ClientModInitializer {
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			// This runs when the client enters a world
 
-			if (CLIENT.getServer() == null) {
+			if (CLIENT.getSingleplayerServer() == null) {
 				// Multiplayer
-				ServerInfo info = CLIENT.getCurrentServerEntry();
-				serverId = info != null ? info.address.replace(":", "_") : "unknown_server";
+				ServerData info = CLIENT.getCurrentServer();
+				serverId = info != null ? info.ip.replace(":", "_") : "unknown_server";
 			} else {
 				// Singleplayer
-				serverId = CLIENT.getServer().getSavePath(WorldSavePath.ROOT)
+				serverId = CLIENT.getSingleplayerServer().getWorldPath(LevelResource.ROOT)
 					.getParent().getFileName().toString();
 			}
 			loadData();
 		});
 	}
 
-	private static void render(DrawContext context, RenderTickCounter tickCounter) {
+	private static void render(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
 		float compassPosition = 0.05F;
 		if(SettingsManager.COMPASS_POSITION.getValueAsString().equals("Bottom")){compassPosition = 1-0.18F;}
 		float deltaY = 0F;
 		float size = 1.5F;
-		int color = 0xFFFFFFFF;
-		PlayerEntity player = CLIENT.player;
+		int color;
+		Player player = CLIENT.player;
 		int optionValueIndex = SettingsManager.SHOW_COMPASS_HUD.getValueAsIndex();
 		if(optionValueIndex == 3 
-			|| (optionValueIndex == 2 && !player.getMainHandStack().getItem().getTranslationKey().equals("item.minecraft.compass"))
-			|| (optionValueIndex == 1 && !player.getInventory().containsAny(Set.of(Items.COMPASS)))
+			|| (optionValueIndex == 2 && !player.getMainHandItem().getItem().getDescriptionId().equals("item.minecraft.compass"))
+			|| (optionValueIndex == 1 && !player.getInventory().hasAnyOf(Set.of(Items.COMPASS)))
 		){
 			return;
 		}
-		TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-		Camera camera = CLIENT.gameRenderer.getCamera();
-        if (camera == null) return;
+		Font textRenderer = Minecraft.getInstance().font;
+		Camera camera = CLIENT.gameRenderer.mainCamera();
 
-		float fov = ((FovMultiplierAccessor)(Object)CLIENT.gameRenderer).getFovMultiplier() * CLIENT.options.getFov().getValue();
-		float camDirection = camera.getYaw();
+        float fov = camera.getFov();
+		float camDirection = camera.yRot();
 
 		if(!SettingsManager.CARDINALS_DIRECTION_POSITION.getValue().equals("Disabled")){
 			color = SettingsManager.getRGBColorFromSetting(SettingsManager.CARDINALS_DIRECTION_COLOR.getValueAsString());
@@ -142,39 +158,39 @@ public class BetterCompass implements ClientModInitializer {
 		}
 
 		//Add death position to the compass HUD
-		if(deathPointBlockPos != null && CLIENT.world.getRegistryKey() == deathDimension && !SettingsManager.LAST_DEATH_DIRECTION_POSITION.getValue().equals("Disabled")){
+		if(deathPointBlockPos != null && CLIENT.level.dimension() == deathDimension && !SettingsManager.LAST_DEATH_DIRECTION_POSITION.getValue().equals("Disabled")){
 			deltaY = 0;
 			size = 1.5F;
 			color = SettingsManager.getRGBColorFromSetting(SettingsManager.LAST_DEATH_DIRECTION_COLOR.getValueAsString());
 			if(SettingsManager.LAST_DEATH_DIRECTION_POSITION.getValue().equals("Under")){deltaY = 0.03F; size = 0.8F;}
 			if(SettingsManager.LAST_DEATH_DIRECTION_POSITION.getValue().equals("Above")){deltaY = -0.03F; size = 0.8F;}
-			Vec3d deathPos = new Vec3d(deathPointBlockPos.getX(), 0, deathPointBlockPos.getZ());
+			Vec3 deathPos = new Vec3(deathPointBlockPos.getX(), 0, deathPointBlockPos.getZ());
 			double dx = deathPos.x - player.getX();
 			double dz = deathPos.z - player.getZ();
-			drawCompassSymbol(context, textRenderer, fov, "💀", (float)(MathHelper.atan2(dz, dx) * (180 / Math.PI)) - 90, camDirection, compassPosition + deltaY, color, size);
+			drawCompassSymbol(context, textRenderer, fov, "💀", (float)(Mth.atan2(dz, dx) * (180 / Math.PI)) - 90, camDirection, compassPosition + deltaY, color, size);
 		}
 
 		//Add nether portal position to the compass HUD
-		if(netherPortalBlockPos != null && CLIENT.world.getRegistryKey() == World.NETHER && !SettingsManager.NETHER_PORTAL_DIRECTION_POSITION.getValue().equals("Disabled")){
+		if(netherPortalBlockPos != null && CLIENT.level.dimension() == Level.NETHER && !SettingsManager.NETHER_PORTAL_DIRECTION_POSITION.getValue().equals("Disabled")){
 			deltaY = 0;
 			size = 1.5F;
 			color = SettingsManager.getRGBColorFromSetting(SettingsManager.NETHER_PORTAL_DIRECTION_COLOR.getValueAsString());
 			if(SettingsManager.NETHER_PORTAL_DIRECTION_POSITION.getValue().equals("Under")){deltaY = 0.03F; size = 0.8F;}
 			if(SettingsManager.NETHER_PORTAL_DIRECTION_POSITION.getValue().equals("Above")){deltaY = -0.03F; size = 0.8F;}
-			Vec3d netherPortalPos = new Vec3d(netherPortalBlockPos.getX(), 0, netherPortalBlockPos.getZ());
+			Vec3 netherPortalPos = new Vec3(netherPortalBlockPos.getX(), 0, netherPortalBlockPos.getZ());
 			double dx = netherPortalPos.x - player.getX();
 			double dz = netherPortalPos.z - player.getZ();
-			drawCompassSymbol(context, textRenderer, fov, "🌍", (float)(MathHelper.atan2(dz, dx) * (180 / Math.PI)) - 90, camDirection, compassPosition + deltaY, color, size);
+			drawCompassSymbol(context, textRenderer, fov, "🌍", (float)(Mth.atan2(dz, dx) * (180 / Math.PI)) - 90, camDirection, compassPosition + deltaY, color, size);
 		}
 	}
 
-	public static void drawCompassSymbol(DrawContext context, TextRenderer textRenderer, float fov, String symbol, float targetDirection, float camDirection, float y, int color, float scale){
-		int screenWidth = context.getScaledWindowWidth();
-		int screenHeight = context.getScaledWindowHeight();
+	public static void drawCompassSymbol(GuiGraphicsExtractor context, Font textRenderer, float fov, String symbol, float targetDirection, float camDirection, float y, int color, float scale){
+		int screenWidth = context.guiWidth();
+		int screenHeight = context.guiHeight();
 
 		//Determine the position of the symbol depending on the targetDirection and the camDirection
-		int x = - (int) (screenWidth * 0.5 * GUI_WIDTH * MathHelper.wrapDegrees(camDirection-targetDirection)/fov);
-		if(Math.abs(MathHelper.wrapDegrees(camDirection-targetDirection)/fov)>1.0){
+		int x = - (int) (screenWidth * 0.5 * GUI_WIDTH * Mth.wrapDegrees(camDirection - targetDirection) / fov);
+		if (Math.abs(Mth.wrapDegrees(camDirection - targetDirection) / fov)>1.0){
 			return;
 		}
 
@@ -184,22 +200,18 @@ public class BetterCompass implements ClientModInitializer {
 		color += 16777216 * alpha;
 		
 		//Scale the GUI
-		var matrices = context.getMatrices();
-		var before = new org.joml.Matrix3x2f(matrices);
+		var matrices = context.pose();
+		var before = new Matrix3x2f(matrices);
 		matrices.scale(scale, scale);
 
-		if(SettingsManager.COMPASS_STYLE.getValueAsString().equals("Shadows")){
-			context.drawCenteredTextWithShadow(textRenderer, Text.literal(symbol),(int) ((screenWidth/2 + x)/scale),(int) ((screenHeight*y)/scale - textRenderer.fontHeight/2f),color);
-		}
-		else{
-			context.drawText(textRenderer, symbol,(int) ((screenWidth/2 + x)/scale - textRenderer.getWidth(symbol)/2f),(int) ((screenHeight*y)/scale - textRenderer.fontHeight/2f),color, false);
+		if (SettingsManager.COMPASS_STYLE.getValueAsString().equals("Shadows")) {
+			context.centeredText(textRenderer, Component.literal(symbol), (int) ((screenWidth / 2f + x) / scale), (int) ((screenHeight * y) / scale - textRenderer.lineHeight / 2f), color);
+		} else {
+			context.text(textRenderer, symbol,(int) ((screenWidth / 2f + x) / scale - textRenderer.width(symbol) / 2f), (int) ((screenHeight * y)/scale - textRenderer.lineHeight / 2f), color, false);
 		}
 		
 		matrices.set(before);
 	}
-
-
-
 
 	public static void saveValues() {
 		Path configPath = FabricLoader.getInstance().getConfigDir().resolve(serverId).resolve(MOD_ID + ".json");
@@ -227,7 +239,7 @@ public class BetterCompass implements ClientModInitializer {
 			deathPointBlockPos = stringToBlockPos(valueMap.get("deathPointBlockPos"));
 		}
 		if(valueMap.containsKey("deathDimension")){
-			deathDimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.tryParse(valueMap.get("deathDimension")));
+			deathDimension = ResourceKey.create(Registries.DIMENSION, Identifier.tryParse(valueMap.get("deathDimension")));
 		}
 		if(valueMap.containsKey("netherPortalBlockPos")){
 			netherPortalBlockPos = stringToBlockPos(valueMap.get("netherPortalBlockPos"));
@@ -238,8 +250,8 @@ public class BetterCompass implements ClientModInitializer {
 		return pos.getX() + "," + pos.getY() + "," + pos.getZ();
 	}
 
-	private static String registryKeyToString(RegistryKey<World> key){
-		return key.getValue().toString();
+	private static String registryKeyToString(ResourceKey<Level> key){
+		return key.identifier().toString();
 	}
 
 	private static BlockPos stringToBlockPos(String str){

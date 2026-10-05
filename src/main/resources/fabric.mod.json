@@ -18,12 +18,8 @@
 	"icon": "assets/better-compass/icon.png",
 	"environment": "client",
 	"entrypoints": {
-		"client": [
-			"fr.madu59.bettercompass.BetterCompass"
-		],
-		"modmenu": [
-			"fr.madu59.bettercompass.config.configScreen.ModMenuApiImpl" 
-		]
+		"client": [ "fr.madu59.bettercompass.BetterCompass" ],
+		"modmenu": [ "fr.madu59.bettercompass.modmenu.BetterCompassModMenu" ]
 	},
 	"mixins": [
 		"better-compass.client.mixins.json"
