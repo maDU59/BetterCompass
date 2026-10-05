@@ -3,18 +3,19 @@ package fr.madu59.bettercompass.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
 import fr.madu59.bettercompass.BetterCompass;
 import net.fabricmc.loader.api.FabricLoader;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SettingsManager {
-
     public static List<Option> ALL_OPTIONS = new ArrayList<>();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(BetterCompass.MOD_ID + ".json");
@@ -23,91 +24,91 @@ public class SettingsManager {
     public static List<Object> POSITION_VALUES = List.of("Aligned", "Above", "Under", "Disabled");
 
     public static Option SHOW_COMPASS_HUD = loadOptionWithDefaults(
-        "SHOW_COMPASS_HUD",
-        "better-compass.config.show_compass_hud",
-        "better-compass.config.show_compass_hud_desc",
-        "Always",
-        "Always",
-        List.of("Always", "Compass in inventory", "Compass in hand", "Never")
+            "SHOW_COMPASS_HUD",
+            "better-compass.config.show_compass_hud",
+            "better-compass.config.show_compass_hud_desc",
+            "Always",
+            "Always",
+            List.of("Always", "Compass in inventory", "Compass in hand", "Never")
     );
 
     public static Option COMPASS_STYLE = loadOptionWithDefaults(
-        "COMPASS_STYLE",
-        "better-compass.config.compass_style",
-        "better-compass.config.compass_style_desc",
-        "No shadows",
-        "No shadows",
-        List.of("Shadows", "No shadows")
+            "COMPASS_STYLE",
+            "better-compass.config.compass_style",
+            "better-compass.config.compass_style_desc",
+            "No shadows",
+            "No shadows",
+            List.of("Shadows", "No shadows")
     );
 
     public static Option COMPASS_POSITION = loadOptionWithDefaults(
-        "COMPASS_POSITION",
-        "better-compass.config.compass_position",
-        "better-compass.config.compass_position_desc",
-        "Top",
-        "Top",
-        List.of("Top", "Bottom")
+            "COMPASS_POSITION",
+            "better-compass.config.compass_position",
+            "better-compass.config.compass_position_desc",
+            "Top",
+            "Top",
+            List.of("Top", "Bottom")
     );
 
     public static Option CARDINALS_DIRECTION_POSITION = loadOptionWithDefaults(
-        "CARDINALS_DIRECTION_POSITION",
-        "better-compass.config.cardinals_direction_position",
-        "better-compass.config.cardinals_direction_position_desc",
-        "Aligned",
-        "Aligned",
-        POSITION_VALUES
+            "CARDINALS_DIRECTION_POSITION",
+            "better-compass.config.cardinals_direction_position",
+            "better-compass.config.cardinals_direction_position_desc",
+            "Aligned",
+            "Aligned",
+            POSITION_VALUES
     );
 
     public static Option CARDINALS_DIRECTION_COLOR = loadOptionWithDefaults(
-        "CARDINALS_DIRECTION_COLOR",
-        "better-compass.config.cardinals_direction_color",
-        "better-compass.config.cardinals_direction_color_desc",
-        "Red",
-        "Red",
-        COLOR_OPTION_VALUES
+            "CARDINALS_DIRECTION_COLOR",
+            "better-compass.config.cardinals_direction_color",
+            "better-compass.config.cardinals_direction_color_desc",
+            "Red",
+            "Red",
+            COLOR_OPTION_VALUES
     );
 
     public static Option LAST_DEATH_DIRECTION_POSITION = loadOptionWithDefaults(
-        "LAST_DEATH_DIRECTION_POSITION",
-        "better-compass.config.last_death_direction_position",
-        "better-compass.config.last_death_direction_position_desc",
-        "Under",
-        "Under",
-        POSITION_VALUES
+            "LAST_DEATH_DIRECTION_POSITION",
+            "better-compass.config.last_death_direction_position",
+            "better-compass.config.last_death_direction_position_desc",
+            "Under",
+            "Under",
+            POSITION_VALUES
     );
 
     public static Option LAST_DEATH_DIRECTION_COLOR = loadOptionWithDefaults(
-        "LAST_DEATH_DIRECTION_COLOR",
-        "better-compass.config.last_death_direction_color",
-        "better-compass.config.last_death_direction_color_desc",
-        "Grey",
-        "Grey",
-        COLOR_OPTION_VALUES
+            "LAST_DEATH_DIRECTION_COLOR",
+            "better-compass.config.last_death_direction_color",
+            "better-compass.config.last_death_direction_color_desc",
+            "Grey",
+            "Grey",
+            COLOR_OPTION_VALUES
     );
 
     public static Option NETHER_PORTAL_DIRECTION_POSITION = loadOptionWithDefaults(
-        "NETHER_PORTAL_DIRECTION_POSITION",
-        "better-compass.config.nether_portal_direction_position",
-        "better-compass.config.nether_portal_direction_position_desc",
-        "Under",
-        "Under",
-        POSITION_VALUES
+            "NETHER_PORTAL_DIRECTION_POSITION",
+            "better-compass.config.nether_portal_direction_position",
+            "better-compass.config.nether_portal_direction_position_desc",
+            "Under",
+            "Under",
+            POSITION_VALUES
     );
 
     public static Option NETHER_PORTAL_DIRECTION_COLOR = loadOptionWithDefaults(
-        "NETHER_PORTAL_DIRECTION_COLOR",
-        "better-compass.config.nether_portal_direction_color",
-        "better-compass.config.nether_portal_direction_color_desc",
-        "Purple",
-        "Purple",
-        COLOR_OPTION_VALUES
+            "NETHER_PORTAL_DIRECTION_COLOR",
+            "better-compass.config.nether_portal_direction_color",
+            "better-compass.config.nether_portal_direction_color_desc",
+            "Purple",
+            "Purple",
+            COLOR_OPTION_VALUES
     );
 
     public static List<String> getAllOptionsId(){
         List<String> list = new ArrayList<>();
         for (Option option : ALL_OPTIONS){
             list.add(option.getId());
-            }
+        }
         return list;
     }
 
@@ -139,7 +140,7 @@ public class SettingsManager {
 
     public static int getRGBColorFromSetting(String colorName) {
         int[] colors = getColorFromSetting(colorName);
-        return colors[2] + colors[1] * 256 + colors[0] * 256 * 256 + 255 * 256 * 256 *256;
+        return colors[2] + colors[1] * 256 + colors[0] * 256 * 256 + 255 * 256 * 256 * 256;
     }
 
     public static float[] convertColorToFloat(int[] colors){
@@ -150,8 +151,7 @@ public class SettingsManager {
     }
 
     public static float convertAlphaToFloat(int alpha){
-        float alphaFloat = alpha/(float)255.0;
-        return alphaFloat;
+        return alpha / (float)255.0;
     }
 
     public static int[] getColorFromSetting(String colorName) {
@@ -219,9 +219,7 @@ public class SettingsManager {
 
     private static Map<String, Option> toMap(List<Option> options) {
         Map<String, Option> map = new LinkedHashMap<>();
-        for (Option option : options) {
-            map.put(option.getId(), option);
-        }
+        for (Option option : options) map.put(option.getId(), option);
         return map;
     }
 
@@ -230,30 +228,17 @@ public class SettingsManager {
             Type type = new TypeToken<Map<String, Option>>() {}.getType();
             Map<String, Option> map = GSON.fromJson(reader, type);
             return map.get(key);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        } catch (IOException _) {}
+        return null;
     }
 
     private static Option loadOptionWithDefaults(String id, String name, String description, Object value, Object defaultValue, List<Object> possibleValues) {
         Option loadedOption = loadOption(id);
-        if (loadedOption == null) {
-            return new Option(
-                    id,
-                    name,
-                    description,
-                    value,
-                    defaultValue,
-                    possibleValues
-            );
-        } else {
-            loadedOption.setPossibleValues(possibleValues);
-            loadedOption.setName(name);
-            loadedOption.setDescription(description);
-            SettingsManager.ALL_OPTIONS.add(loadedOption);
-            return loadedOption;
-        }
+        if (loadedOption == null) return new Option(id, name, description, value, defaultValue, possibleValues);
+        loadedOption.setPossibleValues(possibleValues);
+        loadedOption.setName(name);
+        loadedOption.setDescription(description);
+        SettingsManager.ALL_OPTIONS.add(loadedOption);
+        return loadedOption;
     }
-    
 }
