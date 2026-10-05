@@ -3,25 +3,25 @@
 	"id": "better-compass",
 	"version": "${version}",
 	"name": "Better Compass",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Display a clean and comprehensive compass HUD instead of having to use the compass item or F3",
 	"authors": [
-		"Me!"
+		"maDU59_"
+	],
+	"contributors": [
+		"AmyMialee"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://discord.gg/ATTZQQeVw4",
+		"sources": "https://github.com/maDU59/BetterCompass/"
 	},
 	"license": "MIT",
 	"icon": "assets/better-compass/icon.png",
-	"environment": "*",
+	"environment": "client",
 	"entrypoints": {
-		"main": [
+		"client": [
 			"fr.madu59.bettercompass.BetterCompass"
 		],
-		"client": [
-			"fr.madu59.bettercompass.BetterCompassClient"
-		],
-		"modmenu": [ 
+		"modmenu": [
 			"fr.madu59.bettercompass.config.configScreen.ModMenuApiImpl" 
 		]
 	},
@@ -29,12 +29,6 @@
 		"better-compass.client.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.17.2",
-		"minecraft": "~1.21.9",
-		"java": ">=21",
 		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
 	}
 }
